@@ -1,0 +1,4 @@
+fyp\common\entity\User.class
+fyp\common\entity\BaceEntity.class
+fyp\common\entity\Permission.class
+fyp\common\entity\Role.class
