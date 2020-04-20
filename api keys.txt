@@ -1,0 +1,14 @@
+
+My Gemini API Key #1
+
+key
+account-VN9Z7Gw0XbJoXATvtrmk
+
+secrect
+2UNxfhv7rbeAaojNHk6vxnT33CwV
+
+bitfinex api key
+
+key - veLi6N0d2EO6G5x1MtgAZ5PHM64qoY0xyufoV8V7nes
+
+secret - NPgO4mfZFa3fJeclPV5WRhf8YSXjJpSsT8hl4tQIp3H

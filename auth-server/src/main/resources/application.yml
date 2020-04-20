@@ -17,9 +17,20 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
         show_sql: true
         format_sql: true
+  application:
+    name: AUTH-SERVICE
 logging:
   level:
     org:
       hibernate:
         type: trace
 check-user-scopes: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:9002/eureka
+  instance:
+    hostname: localhost

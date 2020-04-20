@@ -49,7 +49,9 @@ public class UserService {
             if (savedUser == null){
                 throw new Exception("Server error");
             }
-            return modelMapper.map(savedUser, UserDTO.class);
+            UserDTO map = modelMapper.map(savedUser, UserDTO.class);
+            map.setId(savedUser.getId());
+            return map;
         }
 
     }

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 public class UserDTO {
 
-    @JsonIgnore
+//    @JsonIgnore
     private
     Long id;
     @NotBlank(message = "{user.email.blank}")

@@ -1,21 +1,22 @@
 package com.fyp.profileservice.profile.Controller;
 
+import com.fyp.profileservice.profile.Component.UrlPropertyBundle;
 import com.fyp.profileservice.profile.Component.ValidationMessageBundle;
 import com.fyp.profileservice.profile.DTO.UserDTO;
 import com.fyp.profileservice.profile.Enum.UserRoleEnum;
 import com.fyp.profileservice.profile.Service.UserService;
+import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
 @RestController
 @CrossOrigin
-@RequestMapping("api/v1/trader")
+@RequestMapping("api/v1/profile/trader")
 public class TraderController {
     @Autowired
     UserService userService;
@@ -25,6 +26,12 @@ public class TraderController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Autowired
+    UrlPropertyBundle urlPropertyBundle;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/register")
     public ResponseEntity create(@Valid @RequestBody UserDTO userDTO) {
@@ -36,8 +43,18 @@ public class TraderController {
         try {
             UserDTO savedUser = userService.save(userDTO);
             savedUser.setPassword(null);
-            return new ResponseEntity<UserDTO>(savedUser, HttpStatus.CREATED);
+            String url = urlPropertyBundle.getWalletServiceUrl() + "/trader/new";
+            HttpEntity<UserDTO> userDTORequestEntity = new HttpEntity<UserDTO>(savedUser);
+            ResponseEntity<HttpStatus> exchange = restTemplate.exchange(url, HttpMethod.POST, userDTORequestEntity, HttpStatus.class);
+            if (exchange.getStatusCode().is2xxSuccessful()){
+                return new ResponseEntity<UserDTO>(savedUser, HttpStatus.CREATED);
+            }
+            else {
+                System.out.println("wallet creation failed");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             if (e.getMessage().equals("User exists")){
                 return new ResponseEntity<String>(validationMessageBundle.getUserAlreadyExist(), HttpStatus.BAD_REQUEST);
             }
@@ -63,7 +80,7 @@ public class TraderController {
         if (name != null){
             Long userIdByUsername = userService.getUserIdByUsername(name, UserRoleEnum.ROLE_TRADER);
             if (userIdByUsername != null) {
-                return new ResponseEntity<Long>(userIdByUsername, HttpStatus.FOUND);
+                return new ResponseEntity<Long>(userIdByUsername, HttpStatus.OK);
             }
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }

@@ -5,17 +5,19 @@ import com.fyp.profileservice.profile.DTO.UserDTO;
 import com.fyp.profileservice.profile.Enum.UserRoleEnum;
 import com.fyp.profileservice.profile.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 
 @RestController
 @CrossOrigin
-@RequestMapping("api/v1/investor")
+@RequestMapping("api/v1/profile/investor")
 public class InvestorController {
     @Autowired
     UserService userService;
@@ -25,6 +27,9 @@ public class InvestorController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/register")
     public ResponseEntity create(@Valid @RequestBody UserDTO userDTO) {
@@ -62,11 +67,17 @@ public class InvestorController {
         if (name != null){
             Long userIdByUsername = userService.getUserIdByUsername(name, UserRoleEnum.ROLE_INVESTOR);
             if (userIdByUsername != null) {
-                return new ResponseEntity<Long>(userIdByUsername, HttpStatus.FOUND);
+                return new ResponseEntity<Long>(userIdByUsername, HttpStatus.OK);
             }
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path = "/test")
+    public ResponseEntity test() {
+        ResponseEntity<String> exchange = restTemplate.exchange("http://localhost:8081/api/v1/twallet/test", HttpMethod.GET, null, String.class);
+        return exchange;
     }
 
 }

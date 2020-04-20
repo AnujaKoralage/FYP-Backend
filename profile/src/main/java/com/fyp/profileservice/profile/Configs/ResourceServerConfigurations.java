@@ -31,10 +31,12 @@ public class ResourceServerConfigurations extends ResourceServerConfigurerAdapte
 //                .accessDeniedHandler(
 //                        (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED));
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/trader/register").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/trader/name").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/investor/register").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/investor/name").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/profile/trader/register").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/profile/trader/name").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/profile/trader/id").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/profile/investor/register").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/profile/investor/name").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/profile/investor/id").permitAll()
 
                 .antMatchers("/api/v1/**").authenticated();
     }
