@@ -29,6 +29,7 @@ public class ResourceServerConfigurations extends ResourceServerConfigurerAdapte
 //                        (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED));
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/wallet/trader/new").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/wallet/investor/new").permitAll()
 
                 .antMatchers("/api/v1/**").authenticated();
     }

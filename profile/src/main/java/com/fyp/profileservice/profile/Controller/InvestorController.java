@@ -1,14 +1,12 @@
 package com.fyp.profileservice.profile.Controller;
 
+import com.fyp.profileservice.profile.Component.UrlPropertyBundle;
 import com.fyp.profileservice.profile.Component.ValidationMessageBundle;
 import com.fyp.profileservice.profile.DTO.UserDTO;
 import com.fyp.profileservice.profile.Enum.UserRoleEnum;
 import com.fyp.profileservice.profile.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -31,6 +29,9 @@ public class InvestorController {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    UrlPropertyBundle urlPropertyBundle;
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/register")
     public ResponseEntity create(@Valid @RequestBody UserDTO userDTO) {
         if (userDTO.getEmail() == null || userDTO.getPassword() == null || userDTO.getUsername() == null){
@@ -41,8 +42,18 @@ public class InvestorController {
         try {
             UserDTO savedUser = userService.save(userDTO);
             savedUser.setPassword(null);
-            return new ResponseEntity<UserDTO>(savedUser, HttpStatus.CREATED);
+            String url = urlPropertyBundle.getWalletServiceUrl() + "/investor/new";
+            HttpEntity<UserDTO> userDTORequestEntity = new HttpEntity<UserDTO>(savedUser);
+            ResponseEntity<HttpStatus> exchange = restTemplate.exchange(url, HttpMethod.POST, userDTORequestEntity, HttpStatus.class);
+            if (exchange.getStatusCode().is2xxSuccessful()){
+                return new ResponseEntity<UserDTO>(savedUser, HttpStatus.CREATED);
+            }
+            else {
+                System.out.println("wallet creation failed");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             if (e.getMessage().equals("User exists")){
                 return new ResponseEntity<String>(validationMessageBundle.getUserAlreadyExist(), HttpStatus.BAD_REQUEST);
             }

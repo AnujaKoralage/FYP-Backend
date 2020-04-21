@@ -37,7 +37,7 @@ public class CustomUserAuthenticationConverter implements UserAuthenticationConv
     public Authentication extractAuthentication(Map<String, ?> map) {
         if (map.containsKey(USERNAME))
             return new UsernamePasswordAuthenticationToken(
-                    new CustomPrincipal(map.get(USERNAME).toString(), map.get(EMAIL).toString()), "N/A",
+                    new CustomPrincipal(map.get(USERNAME).toString(), map.get(EMAIL).toString(),  map.get("id").toString()), "N/A",
                     getAuthorities(map));
         return null;
     }

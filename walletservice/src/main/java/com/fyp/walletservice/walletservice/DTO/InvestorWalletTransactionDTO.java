@@ -1,21 +1,21 @@
 package com.fyp.walletservice.walletservice.DTO;
 
 
+import com.fyp.walletservice.walletservice.Enums.MathEnum;
 
 public class InvestorWalletTransactionDTO {
 
     private Long id;
     private String paymentTransactionId;
     private Double amount;
-    private InvestorWalletDTO investorWalletDTO;
+    private MathEnum mathEnum;
 
     @Override
     public String toString() {
         return "InvestorWalletTransactionDTO{" +
-                "id=" + id +
-                ", paymentTransactionId='" + paymentTransactionId + '\'' +
-                ", amount=" + amount +
-                ", investorWalletDTO=" + investorWalletDTO +
+                "id=" + getId() +
+                ", paymentTransactionId='" + getPaymentTransactionId() + '\'' +
+                ", amount=" + getAmount() +
                 '}';
     }
 
@@ -43,11 +43,11 @@ public class InvestorWalletTransactionDTO {
         this.amount = amount;
     }
 
-    public InvestorWalletDTO getInvestorWalletDTO() {
-        return investorWalletDTO;
+    public MathEnum getMathEnum() {
+        return mathEnum;
     }
 
-    public void setInvestorWalletDTO(InvestorWalletDTO investorWalletDTO) {
-        this.investorWalletDTO = investorWalletDTO;
+    public void setMathEnum(MathEnum mathEnum) {
+        this.mathEnum = mathEnum;
     }
 }

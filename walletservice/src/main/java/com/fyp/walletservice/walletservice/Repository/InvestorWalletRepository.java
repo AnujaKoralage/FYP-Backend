@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InvestorWalletRepository extends JpaRepository<InvestorWalletEntity, Long> {
 
+    public InvestorWalletEntity findByInvestorId(Long id);
+
 }
