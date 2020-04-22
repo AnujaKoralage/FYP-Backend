@@ -11,15 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
 
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1/wallet/investor")
+
 public class InvestorController {
     @Autowired
     InvestorService investorService;
@@ -89,6 +93,7 @@ public class InvestorController {
     }
 
     @PutMapping(path = "/update")
+    @Secured("hasAuthority('role_investor')")
     public ResponseEntity updateUserWallet(@RequestBody InvestorWalletTransactionDTO request, Authentication authentication) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
         double balace;
