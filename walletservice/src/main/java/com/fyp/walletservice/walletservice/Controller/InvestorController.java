@@ -93,7 +93,6 @@ public class InvestorController {
     }
 
     @PutMapping(path = "/update")
-    @Secured("hasAuthority('role_investor')")
     public ResponseEntity updateUserWallet(@RequestBody InvestorWalletTransactionDTO request, Authentication authentication) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
         double balace;
