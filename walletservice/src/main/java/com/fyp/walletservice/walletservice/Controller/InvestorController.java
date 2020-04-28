@@ -88,6 +88,7 @@ public class InvestorController {
             walletById.setId(null);
             return new ResponseEntity<InvestorWalletDTO>(walletById, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

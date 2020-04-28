@@ -18,7 +18,7 @@ spring:
         show_sql: true
         format_sql: true
   application:
-    name: PROFILE-SERVICE
+    name: PAYMENT-SERVICE
 
 logging:
   level:
@@ -39,3 +39,11 @@ security:
           BtmnkX4wXdEunTnIgbZiWOp9UbTHE82Aui3lE1qj9pOvZxa9z888R61dUhbYlX9E
           LQIDAQAB
           -----END PUBLIC KEY-----
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:9002/eureka
+  instance:
+    hostname: localhost

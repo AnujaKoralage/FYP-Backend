@@ -12,6 +12,14 @@ spring:
           uri: lb://AUTH-SERVICE
           predicates:
             - Path=/oauth/**
+        - id: wallet-service
+          uri: lb://WALLET-SERVICE
+          predicates:
+            - Path=/api/v1/wallet/**
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payment/**
 
 eureka:
   client:
