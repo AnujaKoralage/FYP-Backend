@@ -1,0 +1,11 @@
+paypals - raahi.kiedis@iillii.org  Raahi@97
+
+?paymentId=PAYID-L2RQFDY2UK842439R6725935&token=EC-2RP51035TF8115808&PayerID=4T2SVJK2TBF8G
+
+
+Username:
+sb-pzhn51531816_api1.business.example.com
+Password:
+P2QQXG5YDECLHZ7S
+Signature:
+A6vJo4fshVdP.BScU0f37Yaf0BdFAIQngLhEcTre2pFXkf0hgyJDl3La

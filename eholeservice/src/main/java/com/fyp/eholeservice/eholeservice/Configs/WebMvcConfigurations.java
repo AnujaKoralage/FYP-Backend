@@ -1,6 +1,6 @@
-package com.fyp.profileservice.profile.Configs;
+package com.fyp.eholeservice.eholeservice.Configs;
 
-import com.fyp.profileservice.profile.Util.CustomPrincipal;
+import com.fyp.eholeservice.eholeservice.Util.CustomPrincipal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
@@ -21,6 +21,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class WebMvcConfigurations implements WebMvcConfigurer {
+
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(currentUserHandlerMethodArgumentResolver());
@@ -47,18 +48,13 @@ public class WebMvcConfigurations implements WebMvcConfigurer {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Bean
-    RestTemplate getRestTemplate() {
+    public RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
-    }
+//    @Bean
+//    public TokenStore tokenStore() {
+//        return new InMemoryTokenStore();
+//    }
+
 }

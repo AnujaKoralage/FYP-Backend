@@ -8,11 +8,11 @@
         <version>2.2.6.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.fyp.paymentservice</groupId>
-    <artifactId>paymentservice</artifactId>
+    <groupId>com.fyp.eholeservice</groupId>
+    <artifactId>eholeservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>paymentservice</name>
-    <description>Demo project for Spring Boot</description>
+    <name>eholeservice</name>
+    <description>ehole service</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -25,10 +25,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-security</artifactId>
         </dependency>
@@ -37,45 +33,32 @@
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-quartz -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+            <version>2.2.5.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <version>2.0.1.RELEASE</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.paypal.sdk/rest-api-sdk -->
-        <dependency>
-            <groupId>com.paypal.sdk</groupId>
-            <artifactId>rest-api-sdk</artifactId>
-            <version>1.13.1</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.paypal.sdk/adaptivepaymentssdk -->
-        <dependency>
-            <groupId>com.paypal.sdk</groupId>
-            <artifactId>adaptivepaymentssdk</artifactId>
-            <version>2.6.110</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.paypal.sdk/payouts-sdk -->
-        <dependency>
-            <groupId>com.paypal.sdk</groupId>
-            <artifactId>payouts-sdk</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

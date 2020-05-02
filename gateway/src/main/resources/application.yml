@@ -20,6 +20,14 @@ spring:
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/v1/payment/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+            - POST
+            - GET
+            - PUT
 
 eureka:
   client:

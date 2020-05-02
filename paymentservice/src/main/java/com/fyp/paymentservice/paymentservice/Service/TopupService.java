@@ -21,7 +21,7 @@ public class TopupService {
     @Autowired
     InvestorTopupWithdrawRepository investorTopupWithdrawRepository;
 
-    public String saveTransaction(PayDTO payDTO, String id, int userType) throws Exception {
+    public String saveTransaction(PayDTO payDTO, String id, int userType, TransactionTypes transactionType) throws Exception {
         if (id == null) {
             throw new Exception();
         }
@@ -31,7 +31,7 @@ public class TopupService {
             traderTopupWithdrawTransaction.setCreatedDate(LocalDate.now());
             traderTopupWithdrawTransaction.setStatusType(PaymentStatusTypes.PROCESSING);
             traderTopupWithdrawTransaction.setTraderId(Long.valueOf(id));
-            traderTopupWithdrawTransaction.setTransactionType(TransactionTypes.TOP_UP);
+            traderTopupWithdrawTransaction.setTransactionType(transactionType);
 
             TraderTopupWithdrawTransactions save = traderTopupWithdrawRepository.save(traderTopupWithdrawTransaction);
             if (save == null) {
@@ -44,7 +44,7 @@ public class TopupService {
             investorTopupWithdrawTransaction.setCreatedDate(LocalDate.now());
             investorTopupWithdrawTransaction.setStatusType(PaymentStatusTypes.PROCESSING);
             investorTopupWithdrawTransaction.setInvestorId(Long.valueOf(id));
-            investorTopupWithdrawTransaction.setTransactionType(TransactionTypes.TOP_UP);
+            investorTopupWithdrawTransaction.setTransactionType(transactionType);
 
             InvestorTopupWithdrawTransactions save = investorTopupWithdrawRepository.save(investorTopupWithdrawTransaction);
             if (save == null) {
