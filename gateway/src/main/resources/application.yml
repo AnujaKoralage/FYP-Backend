@@ -20,6 +20,10 @@ spring:
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/v1/payment/**
+        - id: ehole-service
+          uri: lb://EHOLE-SERVICE
+          predicates:
+            - Path=/api/v1/ehole/**
       globalcors:
         corsConfigurations:
           '[/**]':

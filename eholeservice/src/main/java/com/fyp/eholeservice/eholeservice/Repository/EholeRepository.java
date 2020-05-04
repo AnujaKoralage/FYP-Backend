@@ -17,4 +17,6 @@ public interface EholeRepository extends JpaRepository<EholeEntity, Long> {
 
     public EholeEntity findEholeEntitiesById(Long id);
 
+    public Long findEholeEntitiesByTraderId(Long id);
+
 }

@@ -2,15 +2,16 @@ package com.fyp.eholeservice.eholeservice.Service;
 
 import com.fyp.eholeservice.eholeservice.DTO.EholeDTO;
 import com.fyp.eholeservice.eholeservice.Entity.EholeEntity;
-import com.fyp.eholeservice.eholeservice.Enums.EholeAmountType;
-import com.fyp.eholeservice.eholeservice.Enums.EholeStatusType;
-import com.fyp.eholeservice.eholeservice.Enums.EholeType;
+import com.fyp.eholeservice.eholeservice.Entity.EholeTransactionEntity;
+import com.fyp.eholeservice.eholeservice.Enums.*;
 import com.fyp.eholeservice.eholeservice.Repository.EholeRepository;
+import com.fyp.eholeservice.eholeservice.Repository.EholeTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +19,9 @@ public class EholeService {
 
     @Autowired
     EholeRepository eholeRepository;
+
+    @Autowired
+    EholeTransactionRepository eholeTransactionRepository;
 
     public void createEhole(EholeDTO eholeDTO, Long traderId) throws Exception {
 
@@ -69,7 +73,12 @@ public class EholeService {
                 eholeEntitiesById.setEholeAmountType(EholeAmountType.FILLED);
             }
         } else if (eholeStatusType.equals(EholeStatusType.CANCELED)) {
-            eholeEntitiesById.setEholeStatusType(EholeStatusType.CANCELED);
+            if (eholeEntitiesById.getCompletedAmount() < requiredAmount && eholeEntitiesById.getEholeStatusType().equals(EholeStatusType.ACTIVE)) {
+                eholeEntitiesById.setEholeStatusType(EholeStatusType.CANCELED);
+            } else {
+                throw new Exception();
+            }
+
         } else if (eholeStatusType.equals(EholeStatusType.FINISHED)) {
             //money dispatch
             eholeEntitiesById.setEholeStatusType(EholeStatusType.FINISHED);
@@ -78,6 +87,66 @@ public class EholeService {
         eholeEntitiesById.setUpdatedDate(LocalDateTime.now(ZoneId.systemDefault()));
         EholeEntity updatedEntity = eholeRepository.save(eholeEntitiesById);
         return updatedEntity.getEholeStatusType().equals(eholeStatusType);
+    }
+
+    public boolean isEholeCreaterId(Long eholeId, Long traderId) throws Exception {
+
+        EholeEntity eholeEntitiesByTraderId = eholeRepository.findEholeEntitiesById(eholeId);
+        if (eholeEntitiesByTraderId == null) {
+            throw new Exception();
+        }
+        if (eholeEntitiesByTraderId.getTraderId() == traderId) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean investEhole(Long eholeId, double amount, Long investorId, UserType userType) throws Exception {
+
+        EholeEntity eholeEntitiesById = eholeRepository.findEholeEntitiesById(eholeId);
+        if (eholeEntitiesById.getEholeStatusType().equals(EholeStatusType.ACTIVE) && eholeEntitiesById.getEholeAmountType().equals(EholeAmountType.UNFILLED)) {
+            double requiredAmountToComplete = eholeEntitiesById.getTotalAmount() - eholeEntitiesById.getCompletedAmount();
+            if (requiredAmountToComplete < 0) {
+                return false;
+            }
+            eholeEntitiesById.setCompletedAmount(eholeEntitiesById.getCompletedAmount() + amount);
+            double initialRequreidAmount = eholeEntitiesById.getTotalAmount() * 0.75;
+            if (initialRequreidAmount < eholeEntitiesById.getCompletedAmount()) {
+                eholeEntitiesById.setEholeAmountType(EholeAmountType.FILLED);
+            }
+            if (eholeEntitiesById.getCompletedAmount() == eholeEntitiesById.getTotalAmount()) {
+                eholeEntitiesById.setEholeStatusType(EholeStatusType.TRADING);
+            }
+
+//            List<EholeTransactionEntity> eholeTransactions = new ArrayList<>();
+//            eholeTransactions.add(transaction);
+//            eholeEntitiesById.setEholeTransactions(eholeTransactions);
+            EholeEntity save = eholeRepository.save(eholeEntitiesById);
+            if (save != null) {
+                EholeTransactionEntity transaction = new EholeTransactionEntity();
+                transaction.setAmount(amount);
+                transaction.setTransactionType(TransactionType.INVEST);
+                transaction.setUserId(investorId);
+                transaction.setUserType(userType);
+                transaction.setEholeEntity(save);
+                EholeTransactionEntity savedTransaction = eholeTransactionRepository.save(transaction);
+                if (savedTransaction == null) {
+                    throw new  Exception("Unable to save transaction");
+                }
+                return true;
+            }
+            throw new Exception();
+
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isEholeExists(Long eholeId){
+        EholeEntity eholeEntitiesById = eholeRepository.findEholeEntitiesById(eholeId);
+        if (eholeEntitiesById != null)
+            return true;
+        return false;
     }
 
 }
