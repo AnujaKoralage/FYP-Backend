@@ -4,7 +4,9 @@ import com.fyp.eholeservice.eholeservice.Component.ControllerHelper;
 import com.fyp.eholeservice.eholeservice.Component.UrlPropertyBundle;
 import com.fyp.eholeservice.eholeservice.DTO.EholeDTO;
 import com.fyp.eholeservice.eholeservice.DTO.InvestEholeDTO;
+import com.fyp.eholeservice.eholeservice.DTO.PaybackTransactionDTO;
 import com.fyp.eholeservice.eholeservice.DTO.WalletDTO;
+import com.fyp.eholeservice.eholeservice.Entity.EholeTransactionEntity;
 import com.fyp.eholeservice.eholeservice.Enums.EholeStatusType;
 import com.fyp.eholeservice.eholeservice.Enums.EholeType;
 import com.fyp.eholeservice.eholeservice.Enums.UserType;
@@ -13,9 +15,11 @@ import com.fyp.eholeservice.eholeservice.Util.CustomPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +44,7 @@ public class EholeController {
     @PostMapping(path = "/create")
     public ResponseEntity create(@RequestBody EholeDTO eholeDTO, OAuth2Authentication authentication) {
 
-        if (eholeDTO.getAmount() == 0 || !EholeType.contains(eholeDTO.getEholeType())) {
+        if (eholeDTO.getCompletedAmount() == 0 || !EholeType.contains(eholeDTO.getEholeType())) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
         if (!controllerHelper.getScope(authentication).equals("role_trader")) {
@@ -58,11 +62,24 @@ public class EholeController {
 
     @GetMapping(path = "/cancel")
     public ResponseEntity cancelEhole(@RequestParam Long id, OAuth2Authentication authentication) {
+        final OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
+        String accessToken = details.getTokenValue();
 
         try {
             if (eholeService.isEholeCreaterId(id, Long.valueOf(controllerHelper.getCustomPrincipal(authentication).getId()))){
                 eholeService.updateEholeStatus(id, EholeStatusType.CANCELED);
-                return new ResponseEntity(HttpStatus.OK);
+                ArrayList<PaybackTransactionDTO> paybackTransactionDTOS = eholeService.paybackTransactions(id);
+                System.out.println("LENGTH _ " + paybackTransactionDTOS.size());
+                String url = urlPropertyBundle.getEholePaymentUrl() + "/invest/payback";
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Authorization", "Bearer " + accessToken);
+                headers.add("Content-Type", "application/json");
+                HttpEntity<ArrayList<PaybackTransactionDTO>> request = new HttpEntity<>(paybackTransactionDTOS, headers);
+
+                ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+                return new ResponseEntity(exchange.getStatusCode());
+
+//                return new ResponseEntity(HttpStatus.OK);
             } else {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
@@ -109,22 +126,22 @@ public class EholeController {
                 if (Objects.requireNonNull(exchange.getBody()).getCurrentBalance() < investEholeDTO.getAmount()) {
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 } else {
-                    boolean isInvested = false;
+                    EholeTransactionEntity isInvested = null;
                     try {
                         isInvested = eholeService.investEhole(investEholeDTO.getEholeId(), investEholeDTO.getAmount(), Long.valueOf(customPrincipal.getId()), userType);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                     }
-                    if (isInvested) {
+                    if (isInvested != null) {
                         Map<String, String> investObject = new HashMap<>();
                         investObject.put("eholeId", String.valueOf(investEholeDTO.getEholeId()));
                         investObject.put("amount", String.valueOf(investEholeDTO.getAmount()));
+                        investObject.put("eholeTransactionId", String.valueOf(isInvested.getId()));
                         HttpEntity<Map<String, String>> request = new HttpEntity<>(investObject, headers);
 
-                        controllerHelper.saveInvestEholeOnPaymentService(request);
-
-                        return new ResponseEntity(HttpStatus.OK);
+                        return controllerHelper.saveInvestEholeOnPaymentService(request);
+//                        return new ResponseEntity(HttpStatus.OK);
                     } else {
                         return new ResponseEntity(HttpStatus.BAD_REQUEST);
                     }
@@ -134,6 +151,16 @@ public class EholeController {
             }
         }
 
+    }
+
+    @GetMapping(path = "/find/{id}")
+    public ResponseEntity getEholeById(@PathVariable("id") long id) {
+
+        EholeDTO eholeById = eholeService.getEholeById(id);
+        if (eholeById == null) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new <EholeDTO>ResponseEntity(eholeById, HttpStatus.OK);
     }
 
 }

@@ -46,10 +46,10 @@ public class TraderWalletController {
             String url = urlPropertyBundle.getProfileServiceURL() + "/trader/id?username=" + userDTO.getUsername();
             ResponseEntity<Long> exchange = restTemplate.exchange(url, HttpMethod.GET, null, Long.class);
             if (exchange.getStatusCode().is2xxSuccessful()) {
-                    if (exchange.getBody() != userDTO.getId()) {
-                        System.out.println("Conflict on username and id");
-                        return new ResponseEntity(HttpStatus.BAD_REQUEST);
-                    }
+                if (exchange.getBody() != userDTO.getId()) {
+                    System.out.println("Conflict on username and id");
+                    return new ResponseEntity(HttpStatus.BAD_REQUEST);
+                }
             } else {
                 System.out.println("Response Entity status not 200");
                 return new ResponseEntity(exchange.getStatusCode());
@@ -68,18 +68,17 @@ public class TraderWalletController {
                 e.printStackTrace();
                 return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-        else {
+        } else {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
     }
 
     /*
-    * for ui data requirements
-    * */
+     * for ui data requirements
+     * */
     @GetMapping(path = "/id")
-    public ResponseEntity getUserWalletDetailsByUser(Authentication authentication){
+    public ResponseEntity getUserWalletDetailsByUser(Authentication authentication) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
         try {
             TraderWalletDTO walletById = traderService.findWalletById(Long.valueOf(principal.getId()));
@@ -114,4 +113,21 @@ public class TraderWalletController {
         }
     }
 
+    @PutMapping(path = "/update/id")
+    public ResponseEntity updateUserwalletById(@RequestBody TraderWalletTransactionDTO request) {
+        System.out.println("UPDATE CALLED");
+        try {
+            TraderWalletDTO walletById = traderService.findWalletById(request.getId());
+            double newBalance = walletById.getCurrentBalance() + request.getAmount();
+            TraderWalletTransactionDTO update = traderService.update(request, newBalance, request.getId());
+            if (update != null) {
+                return new ResponseEntity(HttpStatus.OK);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

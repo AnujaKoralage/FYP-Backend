@@ -2,6 +2,7 @@ package com.fyp.eholeservice.eholeservice.Enums;
 
 public enum TransactionType {
     INVEST(0, "INVEST"),
+    PAYBACK(1, "PAYBACK")
     ;
 
     private int value;

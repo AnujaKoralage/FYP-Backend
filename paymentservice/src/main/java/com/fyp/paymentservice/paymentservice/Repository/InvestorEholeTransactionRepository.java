@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InvestorEholeTransactionRepository extends JpaRepository<InvestorEholeTransactions, String> {
+
+    public InvestorEholeTransactions findInvestorEholeTransactionsByEholeTransactionId(Long id);
+
 }

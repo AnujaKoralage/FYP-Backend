@@ -24,6 +24,7 @@ public class InvestorEholeTransactions {
     private Long investorId;
     private Long eholeId;
     private LocalDateTime createdDate;
+    private Long eholeTransactionId;
 
     public String getId() {
         return id;
@@ -63,5 +64,13 @@ public class InvestorEholeTransactions {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Long getEholeTransactionId() {
+        return eholeTransactionId;
+    }
+
+    public void setEholeTransactionId(Long eholeTransactionId) {
+        this.eholeTransactionId = eholeTransactionId;
     }
 }

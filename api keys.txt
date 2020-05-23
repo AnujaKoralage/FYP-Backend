@@ -12,3 +12,19 @@ bitfinex api key
 key - veLi6N0d2EO6G5x1MtgAZ5PHM64qoY0xyufoV8V7nes
 
 secret - NPgO4mfZFa3fJeclPV5WRhf8YSXjJpSsT8hl4tQIp3H
+
+coinbase
+
+API Key: Q9jhMRwR1RxPteLW
+
+API Secret: oDDpGLWNwr4G9ntBmY6gUHTmU5qqQeuV
+
+sand box
+
+secret - mDiuBP3atmAglsAR5fyoTfUVMTMkOe1cBJqxVsk8kRFrGSWrCP7wKtsbQ1xCZKXM8D4rYV0HJloF4G2IxDxPqQ==
+key - 8e1f40be9790d92dc776adee637ffc86
+
+
+oanda API
+
+key -   -  038d52bd88bd214459b0f3ffe456a414-dc716c462f1985e244a43a7575f88bff

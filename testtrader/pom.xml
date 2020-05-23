@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.6.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.example.trader</groupId>
+    <artifactId>testtrader</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>testtrader</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.knowm.xchange/xchange-bitstamp -->
+        <dependency>
+            <groupId>org.knowm.xchange</groupId>
+            <artifactId>xchange-bitstamp</artifactId>
+            <version>4.3.19</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.knowm.xchart/xchart -->
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.knowm.xchange</groupId>
+            <artifactId>xchange-examples</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oanda.v20</groupId>
+            <artifactId>v20</artifactId>
+            <version>3.0.25</version>
+        </dependency>
+        <dependency>
+            <groupId>exchange.core2</groupId>
+            <artifactId>exchange-core</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+        <!-- Thanks for using https://jar-download.com -->
+        <!-- https://mvnrepository.com/artifact/org.knowm.xchange/xchange-gemini -->
+        <dependency>
+            <groupId>org.knowm.xchange</groupId>
+            <artifactId>xchange-gemini</artifactId>
+            <version>4.4.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/tech.cassandre.trading.bot/cassandre-trading-bot-spring-boot-autoconfigure -->
+        <dependency>
+            <groupId>tech.cassandre.trading.bot</groupId>
+            <artifactId>cassandre-trading-bot-spring-boot-autoconfigure</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+        </dependency>
+
+
+
+
+
+
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

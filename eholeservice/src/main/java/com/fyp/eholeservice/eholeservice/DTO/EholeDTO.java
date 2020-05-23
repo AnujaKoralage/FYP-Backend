@@ -2,15 +2,15 @@ package com.fyp.eholeservice.eholeservice.DTO;
 
 public class EholeDTO {
 
-    private double amount;
+    private double completedAmount;
     private int eholeType;
 
-    public double getAmount() {
-        return amount;
+    public double getCompletedAmount() {
+        return completedAmount;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setCompletedAmount(double completedAmount) {
+        this.completedAmount = completedAmount;
     }
 
     public int getEholeType() {
