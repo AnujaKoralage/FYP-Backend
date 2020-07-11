@@ -1,5 +1,6 @@
 package com.fyp.eholeservice.eholeservice.Service;
 
+import com.fyp.eholeservice.eholeservice.DTO.EhDTO;
 import com.fyp.eholeservice.eholeservice.DTO.EholeDTO;
 import com.fyp.eholeservice.eholeservice.DTO.PaybackTransactionDTO;
 import com.fyp.eholeservice.eholeservice.Entity.EholeEntity;
@@ -28,7 +29,7 @@ public class EholeService {
     @Autowired
     ModelMapper modelMapper;
 
-    public void createEhole(EholeDTO eholeDTO, Long traderId) throws Exception {
+    public Long createEhole(EholeDTO eholeDTO, Long traderId) throws Exception {
 
         EholeEntity eholeEntity = new EholeEntity();
         eholeEntity.setEholeType(EholeType.findByValue(eholeDTO.getEholeType()));
@@ -37,6 +38,7 @@ public class EholeService {
         eholeEntity.setCreatedDate(LocalDateTime.now(ZoneId.systemDefault()));
         eholeEntity.setEholeAmountType(EholeAmountType.UNFILLED);
         eholeEntity.setEholeStatusType(EholeStatusType.ACTIVE);
+        eholeEntity.setProfitMargin(eholeDTO.getProfit());
         eholeEntity.setTotalAmount(eholeDTO.getCompletedAmount());
         eholeEntity.setCompletedAmount(0);
         eholeEntity.setUpdatedDate(LocalDateTime.now(ZoneId.systemDefault()));
@@ -53,6 +55,7 @@ public class EholeService {
         if (savedEhole == null) {
             throw new Exception();
         }
+        return savedEhole.getId();
 
     }
 
@@ -154,7 +157,7 @@ public class EholeService {
         return false;
     }
 
-    public ArrayList<PaybackTransactionDTO> paybackTransactions(Long eholeId) {
+    public ArrayList<PaybackTransactionDTO> paybackTransactions(Long eholeId, TransactionType transactionType) {
         EholeEntity eholeEntitiesById = eholeRepository.findEholeEntitiesById(eholeId);
         List<EholeTransactionEntity> eholeTransactionEntitiesByEholeEntity = eholeTransactionRepository.findEholeTransactionEntitiesByEholeEntity(eholeEntitiesById);
         ArrayList<PaybackTransactionDTO> transactions = new ArrayList<>();
@@ -166,7 +169,7 @@ public class EholeService {
             newTransaction.setEholeEntity(entity.getEholeEntity());
             newTransaction.setUserType(entity.getUserType());
             newTransaction.setUserId(entity.getUserId());
-            newTransaction.setTransactionType(TransactionType.PAYBACK);
+            newTransaction.setTransactionType(transactionType);
             newTransaction.setAmount(entity.getAmount());
 
             EholeTransactionEntity save = eholeTransactionRepository.save(newTransaction);
@@ -183,7 +186,37 @@ public class EholeService {
         EholeDTO eholeDTO = new EholeDTO();
         eholeDTO.setCompletedAmount(eholeEntitiesById.getCompletedAmount());
         eholeDTO.setEholeType(eholeEntitiesById.getEholeType().getValue());
+        eholeDTO.setProfit(eholeEntitiesById.getProfitMargin());
         return eholeDTO;
+    }
+
+    public List<EhDTO> getEholeByStatus(EholeStatusType eholeStatusType) {
+        List<EholeEntity> eholeEntitiesByEholeStatusType = eholeRepository.findEholeEntitiesByEholeStatusType(eholeStatusType);
+        List<EhDTO> ehDTOS = new ArrayList<>();
+        for (EholeEntity eholeEntity:
+             eholeEntitiesByEholeStatusType) {
+            ehDTOS.add(modelMapper.map(eholeEntity, EhDTO.class));
+        }
+        return ehDTOS;
+    }
+
+    public boolean checkEholeAuth(long eholeId, long userId) {
+        EholeEntity eholeEntitiesById = eholeRepository.findEholeEntitiesById(eholeId);
+        if (eholeEntitiesById.getTraderId() == userId) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean endEhole(long id, long ownerId) {
+        EholeEntity eholeEntitiesById = eholeRepository.findEholeEntitiesById(id);
+        if (eholeEntitiesById == null || ownerId != eholeEntitiesById.getTraderId()) {
+            return false;
+        }
+        eholeEntitiesById.setEholeStatusType(EholeStatusType.FINISHED);
+        eholeRepository.save(eholeEntitiesById);
+        return true;
     }
 
 }

@@ -2,13 +2,11 @@ package com.fyp.eholeservice.eholeservice.Controller;
 
 import com.fyp.eholeservice.eholeservice.Component.ControllerHelper;
 import com.fyp.eholeservice.eholeservice.Component.UrlPropertyBundle;
-import com.fyp.eholeservice.eholeservice.DTO.EholeDTO;
-import com.fyp.eholeservice.eholeservice.DTO.InvestEholeDTO;
-import com.fyp.eholeservice.eholeservice.DTO.PaybackTransactionDTO;
-import com.fyp.eholeservice.eholeservice.DTO.WalletDTO;
+import com.fyp.eholeservice.eholeservice.DTO.*;
 import com.fyp.eholeservice.eholeservice.Entity.EholeTransactionEntity;
 import com.fyp.eholeservice.eholeservice.Enums.EholeStatusType;
 import com.fyp.eholeservice.eholeservice.Enums.EholeType;
+import com.fyp.eholeservice.eholeservice.Enums.TransactionType;
 import com.fyp.eholeservice.eholeservice.Enums.UserType;
 import com.fyp.eholeservice.eholeservice.Service.EholeService;
 import com.fyp.eholeservice.eholeservice.Util.CustomPrincipal;
@@ -19,10 +17,7 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -51,8 +46,8 @@ public class EholeController {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         try {
-            eholeService.createEhole(eholeDTO, Long.valueOf(controllerHelper.getCustomPrincipal(authentication).getId()));
-            return new ResponseEntity(HttpStatus.CREATED);
+            Long eholeId = eholeService.createEhole(eholeDTO, Long.valueOf(controllerHelper.getCustomPrincipal(authentication).getId()));
+            return new ResponseEntity(eholeId ,HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -68,13 +63,16 @@ public class EholeController {
         try {
             if (eholeService.isEholeCreaterId(id, Long.valueOf(controllerHelper.getCustomPrincipal(authentication).getId()))){
                 eholeService.updateEholeStatus(id, EholeStatusType.CANCELED);
-                ArrayList<PaybackTransactionDTO> paybackTransactionDTOS = eholeService.paybackTransactions(id);
+                ArrayList<PaybackTransactionDTO> paybackTransactionDTOS = eholeService.paybackTransactions(id, TransactionType.PAYBACK);
                 System.out.println("LENGTH _ " + paybackTransactionDTOS.size());
                 String url = urlPropertyBundle.getEholePaymentUrl() + "/invest/payback";
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("Authorization", "Bearer " + accessToken);
                 headers.add("Content-Type", "application/json");
-                HttpEntity<ArrayList<PaybackTransactionDTO>> request = new HttpEntity<>(paybackTransactionDTOS, headers);
+                PaybackDTO paybackDTO = new PaybackDTO();
+                paybackDTO.setPaybackTransactionDTOS(paybackTransactionDTOS);
+                paybackDTO.setProfitMargin(null);
+                HttpEntity<PaybackDTO> request = new HttpEntity<>(paybackDTO, headers);
 
                 ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
                 return new ResponseEntity(exchange.getStatusCode());
@@ -163,4 +161,45 @@ public class EholeController {
         return new <EholeDTO>ResponseEntity(eholeById, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/active/{status}")
+    public ResponseEntity getEholeByStatus(@PathVariable("status") EholeStatusType status) {
+        List<EhDTO> eholeByStatus = eholeService.getEholeByStatus(status);
+        return new ResponseEntity(eholeByStatus, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/auth/{id}")
+    public ResponseEntity checkEholeAuth(OAuth2Authentication authentication, @PathVariable("id") long id) {
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+        boolean b = eholeService.checkEholeAuth(id, Long.parseLong(customPrincipal.getId()));
+        if (b) {
+            return new ResponseEntity(HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = "/end/{id}")
+    public ResponseEntity endEhole(OAuth2Authentication authentication, @PathVariable("id") long id) {
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+        String accessToken = controllerHelper.getAccessToken(authentication);
+        EholeDTO eholeById = eholeService.getEholeById(id);
+        boolean b = eholeService.endEhole(id, Long.parseLong(customPrincipal.getId()));
+        if (!b) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        ArrayList<PaybackTransactionDTO> paybackTransactionDTOS = eholeService.paybackTransactions(id, TransactionType.FINISH);
+        System.out.println("LENGTH _ " + paybackTransactionDTOS.size());
+        String url = urlPropertyBundle.getEholePaymentUrl() + "/invest/payback";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/json");
+        PaybackDTO paybackDTO = new PaybackDTO();
+        paybackDTO.setPaybackTransactionDTOS(paybackTransactionDTOS);
+        paybackDTO.setProfitMargin(eholeById.getProfit());
+        HttpEntity<PaybackDTO> request = new HttpEntity<>(paybackDTO, headers);
+
+        ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+        return new ResponseEntity("!@", exchange.getStatusCode());
+    }
 }

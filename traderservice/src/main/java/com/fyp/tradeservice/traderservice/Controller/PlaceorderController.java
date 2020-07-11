@@ -2,10 +2,8 @@ package com.fyp.tradeservice.traderservice.Controller;
 
 import com.fyp.tradeservice.traderservice.Component.ControllerHelper;
 import com.fyp.tradeservice.traderservice.Component.UrlPropertyBundle;
-import com.fyp.tradeservice.traderservice.DTO.CompleteOrderRequest;
-import com.fyp.tradeservice.traderservice.DTO.EholeDTO;
-import com.fyp.tradeservice.traderservice.DTO.OrderDTO;
-import com.fyp.tradeservice.traderservice.DTO.PlaceorderRequest;
+import com.fyp.tradeservice.traderservice.DTO.*;
+import com.fyp.tradeservice.traderservice.Enum.OrderStatus;
 import com.fyp.tradeservice.traderservice.Service.OrderService;
 import com.fyp.tradeservice.traderservice.Util.CustomPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +78,50 @@ public class PlaceorderController {
         return new <OrderDTO>ResponseEntity(orderDTO, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/trade/active/{id}")
+    public ResponseEntity getActiveOrders(@PathVariable("id") long id, OAuth2Authentication authentication){
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+
+        String url = urlPropertyBundle.getEholePaymentUrl() + "/ehole/auth/" + id;
+        String accessToken = controllerHelper.getAccessToken(authentication);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/json");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<Boolean> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Boolean.class);
+
+        if (exchange.getStatusCode().is2xxSuccessful()) {
+            List<OrderDTO> orderByStatusEhole = orderService.getOrderByStatusEhole(id, OrderStatus.ACTIVE);
+                return new ResponseEntity(orderByStatusEhole, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @GetMapping(path = "/trade/complete/{id}")
+    public ResponseEntity getCompleteOrders(@PathVariable("id") long id, OAuth2Authentication authentication){
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+
+        String url = urlPropertyBundle.getEholePaymentUrl() + "/ehole/auth/" + id;
+        String accessToken = controllerHelper.getAccessToken(authentication);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/json");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<Boolean> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Boolean.class);
+
+        if (exchange.getStatusCode().is2xxSuccessful()) {
+            List<OrderDTO> orderByStatusEhole = orderService.getOrderByStatusEhole(id, OrderStatus.COMPLETED);
+            return new ResponseEntity(orderByStatusEhole, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
     @GetMapping(path = "/trader")
     public ResponseEntity getOrdersByTrader(OAuth2Authentication authentication){
         CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
@@ -92,6 +134,68 @@ public class PlaceorderController {
 
         List<OrderDTO> orderByTrader = orderService.getOrderbyEhole(id);
         return new ResponseEntity(orderByTrader, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/eholet/{id}")
+    public ResponseEntity getEholeAmountForTrade(@PathVariable("id") long id){
+
+        System.out.println(id);
+        double orderByTrader = orderService.getEholeInvestedAmount(id);
+        System.out.println(orderByTrader);
+        return new ResponseEntity(orderByTrader, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/ehole/co/{id}")
+    public ResponseEntity getCompletedOrdersprofit(@PathVariable("id") long id) {
+        List<OrderProfitDTO> eholeCurwntProfit = orderService.getEholeCurwntProfit(id);
+        double profit = 0;
+        for (OrderProfitDTO dto :
+                eholeCurwntProfit) {
+            profit = profit + dto.getProfit();
+        }
+        return new ResponseEntity(profit, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/end/{id}")
+    public ResponseEntity endEhole(@PathVariable("id") long id, OAuth2Authentication authentication) {
+
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+
+        String url = urlPropertyBundle.getEholePaymentUrl() + "/ehole/find/" + id;
+        String accessToken = controllerHelper.getAccessToken(authentication);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/json");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<EholeDTO> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, EholeDTO.class);
+
+        List<OrderProfitDTO> eholeCurwntProfit = orderService.getEholeCurwntProfit(id);
+        double profit = 0;
+        for (OrderProfitDTO dto :
+                eholeCurwntProfit) {
+            profit = profit + dto.getProfit();
+        }
+        EholeDTO body = exchange.getBody();
+        double v = body.getAmount() * body.getProfit() / 100;
+        if (v > profit) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        HttpStatus httpStatus = endEholeRequest(authentication, id);
+        return new ResponseEntity(httpStatus);
+
+    }
+
+    public HttpStatus endEholeRequest(OAuth2Authentication authentication, long id) {
+        String url = urlPropertyBundle.getEholePaymentUrl() + "/ehole/end/" + id;
+        String accessToken = controllerHelper.getAccessToken(authentication);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/json");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+        return exchange.getStatusCode();
     }
 
 }

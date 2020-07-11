@@ -17,7 +17,7 @@ public class MarketOrderProfitEntity implements Serializable {
     @JoinColumn(name = "orderId", referencedColumnName = "id")
     private MarketOrderEntity orderEntity;
 
-    private double profit;
+    private Double profit;
     private OrderProfitStatus profitStatus;
 
     public MarketOrderEntity getOrderEntity() {
@@ -28,11 +28,11 @@ public class MarketOrderProfitEntity implements Serializable {
         this.orderEntity = orderEntity;
     }
 
-    public double getProfit() {
+    public Double getProfit() {
         return profit;
     }
 
-    public void setProfit(double profit) {
+    public void setProfit(Double profit) {
         this.profit = profit;
     }
 
@@ -50,5 +50,15 @@ public class MarketOrderProfitEntity implements Serializable {
 
     public void setProfitStatus(OrderProfitStatus profitStatus) {
         this.profitStatus = profitStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "MarketOrderProfitEntity{" +
+                "id=" + id +
+                ", orderEntity=" + orderEntity +
+                ", profit=" + profit +
+                ", profitStatus=" + profitStatus +
+                '}';
     }
 }

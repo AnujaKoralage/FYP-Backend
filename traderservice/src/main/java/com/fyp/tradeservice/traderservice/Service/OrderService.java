@@ -2,6 +2,7 @@ package com.fyp.tradeservice.traderservice.Service;
 
 import com.fyp.tradeservice.traderservice.DTO.OrderBookRequest;
 import com.fyp.tradeservice.traderservice.DTO.OrderDTO;
+import com.fyp.tradeservice.traderservice.DTO.OrderProfitDTO;
 import com.fyp.tradeservice.traderservice.DTO.PlaceorderRequest;
 import com.fyp.tradeservice.traderservice.Entity.MarketOrderEntity;
 import com.fyp.tradeservice.traderservice.Entity.MarketOrderProfitEntity;
@@ -92,6 +93,7 @@ public class OrderService {
             double baceCurSellUnits = baceCurBuyUnits * orderById.getEndPrice();
 
             double profitQuantity = baceCurSellUnits - orderById.getOrderSize();
+            System.out.println(profitQuantity);
             setProfitValues(marketOrderProfitEntity, profitQuantity);
         } else {
             double selBaceCurQty = orderById.getOrderSize() / orderById.getStartPrice();
@@ -99,6 +101,7 @@ public class OrderService {
             double sellQuoCurQty = orderById.getOrderSize() / orderById.getEndPrice();
             double profitInBaceCur = sellQuoCurQty - selBaceCurQty;
             double realProfit = profitInBaceCur / orderById.getEndPrice();
+            System.out.println(realProfit);
             setProfitValues(marketOrderProfitEntity, realProfit);
         }
         MarketOrderEntity save = orderRepository.save(orderById);
@@ -122,6 +125,7 @@ public class OrderService {
             marketOrderProfitEntity.setProfitStatus(OrderProfitStatus.NONE);
             profitRepository.save(marketOrderProfitEntity);
         }
+        System.out.println("DDD ==  " + realProfit);
     }
 
     public OrderDTO getOrderById(long id) {
@@ -155,6 +159,34 @@ public class OrderService {
             orderDTOList.add(modelMapper.map(entity, OrderDTO.class));
         }
         return orderDTOList;
+    }
+
+    public List<OrderDTO> getOrderByStatusEhole(long id, OrderStatus orderStatus) {
+        List<MarketOrderEntity> allByOrderStatusAndEholeId = orderRepository.findAllByOrderStatusAndEholeId(orderStatus, id);
+        ArrayList<OrderDTO> orderDTOList = new ArrayList<>();
+        for (MarketOrderEntity entity :
+                allByOrderStatusAndEholeId) {
+            OrderDTO map = modelMapper.map(entity, OrderDTO.class);
+            if (entity.getOrderStatus().equals(OrderStatus.COMPLETED)) {
+                map.setProfit(entity.getMarketOrderProfitEntity().getProfit());
+            }
+            orderDTOList.add(map);
+        }
+        return orderDTOList;
+    }
+
+    public List<OrderProfitDTO> getEholeCurwntProfit(long eholeId) {
+        List<MarketOrderEntity> allByOrderStatusAndEholeId = orderRepository.findAllByOrderStatusAndEholeId(OrderStatus.COMPLETED, eholeId);
+        ArrayList<OrderProfitDTO> orderProfitDTOS = new ArrayList<>();
+        double profit = 0;
+        for (MarketOrderEntity entity:
+                allByOrderStatusAndEholeId
+             ) {
+            MarketOrderProfitEntity allByOrderEntity = profitRepository.findAllByOrderEntity(entity);
+            OrderProfitDTO map = modelMapper.map(allByOrderEntity, OrderProfitDTO.class);
+            orderProfitDTOS.add(map);
+        }
+        return orderProfitDTOS;
     }
 
 }

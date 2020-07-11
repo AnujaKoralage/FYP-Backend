@@ -15,6 +15,7 @@ public class OrderDTO {
     private float endPrice;
     private OrderStatus orderStatus;
     private OrderProfitStatus profitStatus;
+    private double profit;
 
     public Long getId() {
         return id;
@@ -94,5 +95,13 @@ public class OrderDTO {
 
     public void setProfitStatus(OrderProfitStatus profitStatus) {
         this.profitStatus = profitStatus;
+    }
+
+    public double getProfit() {
+        return profit;
+    }
+
+    public void setProfit(double profit) {
+        this.profit = profit;
     }
 }

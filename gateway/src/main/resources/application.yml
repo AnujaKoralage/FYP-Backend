@@ -8,6 +8,8 @@ spring:
           uri: lb://PROFILE-SERVICE
           predicates:
             - Path=/api/v1/profile/**
+          filters:
+            - AddResponseHeader=Access-Control-Allow-Origin, *
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
@@ -32,6 +34,7 @@ spring:
             - POST
             - GET
             - PUT
+            - OPTION
 
 eureka:
   client:

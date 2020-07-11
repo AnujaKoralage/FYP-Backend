@@ -68,9 +68,9 @@ public class TraderController {
         if (name != null){
             UserDTO userByUsername = userService.getUserByUsername(name);
             if (userByUsername == null){
-                return new ResponseEntity(HttpStatus.OK);
+                return new ResponseEntity(true ,HttpStatus.OK);
             }
-            return new ResponseEntity(HttpStatus.FOUND);
+            return new ResponseEntity(false, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
@@ -85,5 +85,11 @@ public class TraderController {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path = "/idName/{id}")
+    public ResponseEntity getUserName(@PathVariable(name = "id") String id) {
+        String userName = userService.getUserName(Long.parseLong(id));
+        return new ResponseEntity(userName, HttpStatus.OK);
     }
 }

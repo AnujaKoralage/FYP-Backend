@@ -25,6 +25,7 @@ public class EholeEntity {
     private EholeAmountType eholeAmountType;
     private EholeStatusType eholeStatusType;
     private EholeType eholeType;
+    private int profitMargin;
 
     @OneToMany(mappedBy = "eholeEntity")
     private
@@ -137,20 +138,28 @@ public class EholeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EholeEntity that = (EholeEntity) o;
-        return Double.compare(that.totalAmount, totalAmount) == 0 &&
-                Double.compare(that.completedAmount, completedAmount) == 0 &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(traderId, that.traderId) &&
-                Objects.equals(createdDate, that.createdDate) &&
-                Objects.equals(updatedDate, that.updatedDate) &&
-                Objects.equals(completionDate, that.completionDate) &&
-                eholeAmountType == that.eholeAmountType &&
-                eholeStatusType == that.eholeStatusType &&
-                eholeType == that.eholeType;
+        return Double.compare(that.getTotalAmount(), getTotalAmount()) == 0 &&
+                Double.compare(that.getCompletedAmount(), getCompletedAmount()) == 0 &&
+                Objects.equals(getId(), that.getId()) &&
+                Objects.equals(getTraderId(), that.getTraderId()) &&
+                Objects.equals(getCreatedDate(), that.getCreatedDate()) &&
+                Objects.equals(getUpdatedDate(), that.getUpdatedDate()) &&
+                Objects.equals(getCompletionDate(), that.getCompletionDate()) &&
+                getEholeAmountType() == that.getEholeAmountType() &&
+                getEholeStatusType() == that.getEholeStatusType() &&
+                getEholeType() == that.getEholeType();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, traderId, createdDate, updatedDate, completionDate, totalAmount, completedAmount, eholeAmountType, eholeStatusType, eholeType, eholeTransactions);
+        return Objects.hash(getId(), getTraderId(), getCreatedDate(), getUpdatedDate(), getCompletionDate(), getTotalAmount(), getCompletedAmount(), getEholeAmountType(), getEholeStatusType(), getEholeType(), getEholeTransactions());
+    }
+
+    public int getProfitMargin() {
+        return profitMargin;
+    }
+
+    public void setProfitMargin(int profitMargin) {
+        this.profitMargin = profitMargin;
     }
 }

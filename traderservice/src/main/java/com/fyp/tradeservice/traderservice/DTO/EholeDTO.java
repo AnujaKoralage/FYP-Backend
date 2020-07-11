@@ -4,6 +4,7 @@ public class EholeDTO {
 
     private double amount;
     private int eholeType;
+    private int profit;
 
     public double getAmount() {
         return amount;
@@ -21,4 +22,11 @@ public class EholeDTO {
         this.eholeType = eholeType;
     }
 
+    public int getProfit() {
+        return profit;
+    }
+
+    public void setProfit(int profit) {
+        this.profit = profit;
+    }
 }

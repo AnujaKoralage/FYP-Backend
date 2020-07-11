@@ -67,9 +67,9 @@ public class InvestorController {
         if (name != null){
             UserDTO userByUsername = userService.getUserByUsername(name);
             if (userByUsername == null){
-                return new ResponseEntity(HttpStatus.OK);
+                return new ResponseEntity(true ,HttpStatus.OK);
             }
-            return new ResponseEntity(HttpStatus.FOUND);
+            return new ResponseEntity(false, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }

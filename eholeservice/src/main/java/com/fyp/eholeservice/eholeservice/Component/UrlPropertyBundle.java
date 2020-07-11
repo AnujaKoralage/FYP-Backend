@@ -18,6 +18,9 @@ public class UrlPropertyBundle {
     @Value("${payment.service.url}")
     private String eholePaymentUrl;
 
+    @Value("${trading.service.url}")
+    private String tradingUrl;
+
     public String getProfileServiceURL() {
         return profileServiceURL;
     }
@@ -40,5 +43,13 @@ public class UrlPropertyBundle {
 
     public void setEholePaymentUrl(String eholePaymentUrl) {
         this.eholePaymentUrl = eholePaymentUrl;
+    }
+
+    public String getTradingUrl() {
+        return tradingUrl;
+    }
+
+    public void setTradingUrl(String tradingUrl) {
+        this.tradingUrl = tradingUrl;
     }
 }

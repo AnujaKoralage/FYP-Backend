@@ -3,6 +3,7 @@ package com.fyp.paymentservice.paymentservice.Controller;
 import com.fyp.paymentservice.paymentservice.Component.ControllerHelper;
 import com.fyp.paymentservice.paymentservice.Component.UrlPropertyBundle;
 import com.fyp.paymentservice.paymentservice.DTO.InvestTransactionDTO;
+import com.fyp.paymentservice.paymentservice.DTO.PaybackDTO;
 import com.fyp.paymentservice.paymentservice.DTO.PaybackTransactionDTO;
 import com.fyp.paymentservice.paymentservice.DTO.WalletDTO;
 import com.fyp.paymentservice.paymentservice.Enum.UserType;
@@ -96,7 +97,8 @@ public class EholeTransactionController {
     }
 
     @PostMapping(path = "/payback")
-    public ResponseEntity cancelPayback(@RequestBody List<PaybackTransactionDTO> paybackTransactionDTOS, OAuth2Authentication authentication) {
+    public ResponseEntity cancelPayback(@RequestBody PaybackDTO paybackDTO, OAuth2Authentication authentication) {
+        List<PaybackTransactionDTO> paybackTransactionDTOS = paybackDTO.getPaybackTransactionDTOS();
         System.out.println("PAYBACK CALLED " + paybackTransactionDTOS.size());
         final OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
         String accessToken = details.getTokenValue();
@@ -125,7 +127,14 @@ public class EholeTransactionController {
                 Map<String, String> walletObject = new HashMap<>();
                 walletObject.put("paymentTransactionId", transactionId);
                 walletObject.put("id", String.valueOf(paybackTransactionDTO.getUserId()));
-                walletObject.put("amount", String.valueOf(paybackTransactionDTO.getAmount()));
+                if (paybackDTO.getProfitMargin() != null && paybackDTO.getProfitMargin() != 0) {
+                    System.out.println("IMPORTANT " +String.valueOf((paybackTransactionDTO.getAmount() + (paybackTransactionDTO.getAmount()
+                            * paybackDTO.getProfitMargin()/100))));
+                    walletObject.put("amount", String.valueOf((paybackTransactionDTO.getAmount() + (paybackTransactionDTO.getAmount()
+                            * paybackDTO.getProfitMargin()/100))));
+                } else {
+                    walletObject.put("amount", String.valueOf(paybackTransactionDTO.getAmount()));
+                }
                 walletObject.put("mathEnum", "PLUS");
                 HttpEntity<Map<String, String>> request = new HttpEntity<>(walletObject, headers);
 
@@ -148,7 +157,7 @@ public class EholeTransactionController {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
         }
-        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity("Ok", HttpStatus.OK);
     }
 
 

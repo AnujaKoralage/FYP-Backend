@@ -57,8 +57,8 @@ public class PaymentController {
     @Autowired
     CustomAccessTokenConverter customAccessTokenConverter;
 
-    public final String SUCCESS_URL = "pay/success";
-    public final String CANCEL_URL = "pay/cancel";
+    public final String SUCCESS_URL = "http://localhost:4200/payment/success";
+    public final String CANCEL_URL = "api/v1/payment/pay/cancel";
 
 
     @PostMapping(path = "/topup")
@@ -69,7 +69,7 @@ public class PaymentController {
 
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
         String cancelUrl = URLUtils.getBaseURl(request) + "/" + CANCEL_URL;
-        String successUrl = URLUtils.getBaseURl(request) + "/" + SUCCESS_URL;
+        String successUrl = SUCCESS_URL;
         try {
             Payment payment = paypalService.createPayment(payDTO.getPrice(), payDTO.getCurrency(), payDTO.getMethod(), payDTO.getIntent(), payDTO.getDescription(), cancelUrl, successUrl);
 
@@ -117,7 +117,7 @@ public class PaymentController {
         return "failure";
     }
 
-    @GetMapping(path = SUCCESS_URL)
+    @GetMapping(path = "/pay/success")
     public ResponseEntity successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId, @RequestParam("transactionId") String transactionId, OAuth2Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
         final OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();

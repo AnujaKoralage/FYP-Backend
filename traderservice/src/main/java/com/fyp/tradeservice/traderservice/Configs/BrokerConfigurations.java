@@ -1,8 +1,24 @@
 package com.fyp.tradeservice.traderservice.Configs;
 
 import com.oanda.v20.Context;
+import com.oanda.v20.account.AccountID;
+import com.oanda.v20.account.AccountSummary;
+import com.oanda.v20.instrument.InstrumentPriceResponse;
+import com.oanda.v20.pricing.PricingBasePricesResponse;
+import com.oanda.v20.primitives.InstrumentName;
+import com.oanda.v20.user.UserSpecifier;
+import org.knowm.xchange.Exchange;
+import org.knowm.xchange.ExchangeFactory;
+import org.knowm.xchange.bitstamp.BitstampExchange;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.Ticker;
+import org.knowm.xchange.service.marketdata.MarketDataService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Configuration
 public class BrokerConfigurations {
@@ -91,5 +107,25 @@ public class BrokerConfigurations {
 //
 //        return api;
 //    }
+    @Bean
+    public void testTicker() {
+        Timer timer = new Timer();
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+//                Exchange bitstamp = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
+//                MarketDataService marketDataService = bitstamp.getMarketDataService();
+//                Ticker ticker = null;
+//                try {
+//                    ticker = marketDataService.getTicker(CurrencyPair.EUR_USD);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                System.out.println(ticker.toString());
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 2000, 2000);
+    }
 
 }

@@ -6,8 +6,13 @@ import com.fyp.eholeservice.eholeservice.Service.EholeService;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +32,12 @@ public class EholeUpdateScheduler {
 
     @Autowired
     private EholeService eholeService;
+
+    @Autowired
+    UrlPropertyBundle urlPropertyBundle;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     private List<EholeEntity> eholeEntityList = new ArrayList<>();
 
@@ -72,7 +83,7 @@ public class EholeUpdateScheduler {
         }
         for (EholeEntity eholeEntity :
                 allEholesByStatus) {
-            if (now.isBefore(eholeEntity.getCompletionDate()) || now.isEqual(eholeEntity.getCompletionDate())) {
+            if (now.isAfter(eholeEntity.getCompletionDate()) || now.isEqual(eholeEntity.getCompletionDate())) {
                 until = now.until(eholeEntity.getCompletionDate(), ChronoUnit.MINUTES);
                 jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.TRADING);
             } else {
@@ -118,5 +129,20 @@ public class EholeUpdateScheduler {
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule().withMisfireHandlingInstructionFireNow())
                 .build();
     }
+
+//    @Scheduled(fixedRate = 30000)
+//    public void endEhole() {
+//        String url = urlPropertyBundle.getTradingUrl() + "/ehole/co/";
+//
+//        List<EholeEntity> allEholesByStatus = eholeService.getAllEholesByStatus(EholeStatusType.TRADING);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//        HttpEntity httpEntity = new HttpEntity(headers);
+//
+//        for (EholeEntity entity :
+//                allEholesByStatus) {
+//            ResponseEntity<Double> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Double.class);
+//        }
+//    }
 
 }

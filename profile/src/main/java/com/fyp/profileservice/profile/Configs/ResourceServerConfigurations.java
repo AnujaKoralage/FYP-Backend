@@ -1,5 +1,6 @@
 package com.fyp.profileservice.profile.Configs;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 @EnableResourceServer
@@ -30,6 +35,17 @@ public class ResourceServerConfigurations extends ResourceServerConfigurerAdapte
 //                        (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
 //                .accessDeniedHandler(
 //                        (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+        http.cors().configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.addAllowedOrigin("*");
+                config.setAllowCredentials(true);
+                return config;
+            }
+        });
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/profile/trader/register").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/profile/trader/name").permitAll()
