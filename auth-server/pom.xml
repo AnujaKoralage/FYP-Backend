@@ -12,6 +12,7 @@
 	<artifactId>auth</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>auth</name>
+	<packaging>war</packaging>
 	<description>final year project auth server</description>
 
 	<properties>
