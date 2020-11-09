@@ -89,7 +89,7 @@ public class PlaceorderController {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-Type", "application/json");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity<Boolean> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Boolean.class);
+        ResponseEntity exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Boolean.class);
 
         if (exchange.getStatusCode().is2xxSuccessful()) {
             List<OrderDTO> orderByStatusEhole = orderService.getOrderByStatusEhole(id, OrderStatus.ACTIVE);
@@ -111,7 +111,7 @@ public class PlaceorderController {
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-Type", "application/json");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity<Boolean> exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Boolean.class);
+        ResponseEntity exchange = restTemplate.exchange(url, HttpMethod.GET, httpEntity, Boolean.class);
 
         if (exchange.getStatusCode().is2xxSuccessful()) {
             List<OrderDTO> orderByStatusEhole = orderService.getOrderByStatusEhole(id, OrderStatus.COMPLETED);
