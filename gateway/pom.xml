@@ -12,6 +12,7 @@
     <artifactId>gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>gateway</name>
+    <packaging>war</packaging>
     <description>api gateway</description>
 
     <properties>
