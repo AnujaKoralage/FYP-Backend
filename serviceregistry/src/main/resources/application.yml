@@ -8,3 +8,7 @@ eureka:
 #    enable-self-preservation: false
 server:
   port: 9002
+
+spring:
+  main:
+    banner-mode: log
