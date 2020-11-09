@@ -12,6 +12,7 @@
 	<artifactId>profile</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>profile</name>
+	<packaging>war</packaging>
 	<description>profile service</description>
 
 	<properties>
