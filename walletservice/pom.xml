@@ -12,6 +12,7 @@
 	<artifactId>walletservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>walletservice</name>
+	<packaging>war</packaging>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
