@@ -202,7 +202,7 @@ public class EholeService {
 
     public boolean checkEholeAuth(long eholeId, long userId) {
         EholeEntity eholeEntitiesById = eholeRepository.findEholeEntitiesById(eholeId);
-        if (eholeEntitiesById.getTraderId() == userId) {
+        if (eholeEntitiesById != null && eholeEntitiesById.getTraderId() == userId) {
             return true;
         } else {
             return false;

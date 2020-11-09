@@ -83,7 +83,7 @@ public class EholeUpdateScheduler {
         }
         for (EholeEntity eholeEntity :
                 allEholesByStatus) {
-            if (now.isAfter(eholeEntity.getCompletionDate()) || now.isEqual(eholeEntity.getCompletionDate())) {
+            if (now.isBefore(eholeEntity.getCompletionDate()) || now.isEqual(eholeEntity.getCompletionDate())) {
                 until = now.until(eholeEntity.getCompletionDate(), ChronoUnit.MINUTES);
                 jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.TRADING);
             } else {
@@ -91,6 +91,7 @@ public class EholeUpdateScheduler {
                 double requiredAmount = eholeEntity.getTotalAmount() * 0.75;
                 if (requiredAmount > eholeEntity.getCompletedAmount()) {
                     jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.CANCELED);
+                    System.out.println("E HOLE CANCELLED");
                 } else {
                     jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.ACTIVE);
                 }
