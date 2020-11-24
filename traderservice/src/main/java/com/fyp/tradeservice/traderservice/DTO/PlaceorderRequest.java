@@ -1,5 +1,6 @@
 package com.fyp.tradeservice.traderservice.DTO;
 
+import com.fyp.tradeservice.traderservice.Enum.LeverageEnum;
 import com.fyp.tradeservice.traderservice.Enum.OrderAction;
 import com.fyp.tradeservice.traderservice.Enum.OrderType;
 
@@ -9,6 +10,7 @@ public class PlaceorderRequest {
     private long size; // in usd
     private OrderAction orderAction;
     private OrderType orderType;
+    private LeverageEnum leverageEnum;
     private int symbolId;
     private long eholeId;
 
@@ -58,5 +60,13 @@ public class PlaceorderRequest {
 
     public void setEholeId(long eholeId) {
         this.eholeId = eholeId;
+    }
+
+    public LeverageEnum getLeverageEnum() {
+        return leverageEnum;
+    }
+
+    public void setLeverageEnum(LeverageEnum leverageEnum) {
+        this.leverageEnum = leverageEnum;
     }
 }
