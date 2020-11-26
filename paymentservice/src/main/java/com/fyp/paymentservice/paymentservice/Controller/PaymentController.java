@@ -1,10 +1,7 @@
 package com.fyp.paymentservice.paymentservice.Controller;
 
 import com.fyp.paymentservice.paymentservice.Component.UrlPropertyBundle;
-import com.fyp.paymentservice.paymentservice.DTO.PayDTO;
-import com.fyp.paymentservice.paymentservice.DTO.TopupResponceDTO;
-import com.fyp.paymentservice.paymentservice.DTO.WalletDTO;
-import com.fyp.paymentservice.paymentservice.DTO.WithdrawDTO;
+import com.fyp.paymentservice.paymentservice.DTO.*;
 import com.fyp.paymentservice.paymentservice.Enum.PaymentStatusTypes;
 import com.fyp.paymentservice.paymentservice.Enum.TransactionTypes;
 import com.fyp.paymentservice.paymentservice.Service.PaypalService;
@@ -160,6 +157,19 @@ public class PaymentController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity( HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path = "/history")
+    public ResponseEntity getTransactionHistory(OAuth2Authentication authentication) {
+        CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
+        final OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
+        String accessToken = details.getTokenValue();
+
+        Object[] array = authentication.getOAuth2Request().getScope().toArray();
+        String scope = (String) array[0];
+        List<PublicTopupWithdrawTransactionDTO> transactionbyId = topupService.findTransactionbyId(scope, customPrincipal.getId());
+
+        return new ResponseEntity<List<PublicTopupWithdrawTransactionDTO>>(transactionbyId, HttpStatus.OK);
     }
 
     @PostMapping(path = "/withdraw")

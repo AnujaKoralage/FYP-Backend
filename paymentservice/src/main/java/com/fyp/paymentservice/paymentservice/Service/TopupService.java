@@ -1,16 +1,21 @@
 package com.fyp.paymentservice.paymentservice.Service;
 
 import com.fyp.paymentservice.paymentservice.DTO.PayDTO;
+import com.fyp.paymentservice.paymentservice.DTO.PublicTopupWithdrawTransactionDTO;
 import com.fyp.paymentservice.paymentservice.Entity.InvestorTopupWithdrawTransactions;
 import com.fyp.paymentservice.paymentservice.Entity.TraderTopupWithdrawTransactions;
 import com.fyp.paymentservice.paymentservice.Enum.PaymentStatusTypes;
 import com.fyp.paymentservice.paymentservice.Enum.TransactionTypes;
 import com.fyp.paymentservice.paymentservice.Repository.InvestorTopupWithdrawRepository;
 import com.fyp.paymentservice.paymentservice.Repository.TraderTopupWithdrawRepository;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class TopupService {
@@ -85,6 +90,31 @@ public class TopupService {
             return save.getInvestorId();
         }
 
+    }
+
+    public List<PublicTopupWithdrawTransactionDTO> findTransactionbyId(String scope, String id) {
+        List<PublicTopupWithdrawTransactionDTO> publicTopupWithdrawTransactionDTOS = new ArrayList<>();
+        if (scope.equals("role_trader")) {
+            List<TraderTopupWithdrawTransactions> allByTraderId = traderTopupWithdrawRepository.findAllByTraderIdAndStatusType(Long.valueOf(id), PaymentStatusTypes.SUCCESS);
+            allByTraderId.stream().sorted(Comparator.comparing(TraderTopupWithdrawTransactions::getCreatedDate)).
+                    forEach(traderTopupWithdrawTransactions -> {
+                publicTopupWithdrawTransactionDTOS.add(new PublicTopupWithdrawTransactionDTO(traderTopupWithdrawTransactions.getPaypalPaymentId(),
+                        traderTopupWithdrawTransactions.getAmount(),
+                        traderTopupWithdrawTransactions.getTransactionType(),
+                        traderTopupWithdrawTransactions.getCreatedDate(),
+                        traderTopupWithdrawTransactions.getStatusType()));
+            });
+        } else {
+            List<InvestorTopupWithdrawTransactions> allByInvestorId = investorTopupWithdrawRepository.findAllByInvestorIdAndStatusType(Long.valueOf(id), PaymentStatusTypes.SUCCESS);
+            allByInvestorId.stream().sorted(Comparator.comparing(InvestorTopupWithdrawTransactions::getCreatedDate)).forEach(investorTopupWithdrawTransactions -> {
+                publicTopupWithdrawTransactionDTOS.add(new PublicTopupWithdrawTransactionDTO(investorTopupWithdrawTransactions.getPaypalPaymentId(),
+                        investorTopupWithdrawTransactions.getAmount(),
+                        investorTopupWithdrawTransactions.getTransactionType(),
+                        investorTopupWithdrawTransactions.getCreatedDate(),
+                        investorTopupWithdrawTransactions.getStatusType()));
+            });
+        }
+        return publicTopupWithdrawTransactionDTOS;
     }
 
 }
