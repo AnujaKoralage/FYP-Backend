@@ -2,6 +2,7 @@ package com.fyp.eholeservice.eholeservice.Service;
 
 import com.fyp.eholeservice.eholeservice.DTO.EhDTO;
 import com.fyp.eholeservice.eholeservice.DTO.EholeDTO;
+import com.fyp.eholeservice.eholeservice.DTO.EholeTransactionDTO;
 import com.fyp.eholeservice.eholeservice.DTO.PaybackTransactionDTO;
 import com.fyp.eholeservice.eholeservice.Entity.EholeEntity;
 import com.fyp.eholeservice.eholeservice.Entity.EholeTransactionEntity;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EholeService {
@@ -217,6 +220,19 @@ public class EholeService {
         eholeEntitiesById.setEholeStatusType(EholeStatusType.FINISHED);
         eholeRepository.save(eholeEntitiesById);
         return true;
+    }
+
+    public List<EholeTransactionDTO> getUserTransactions(Long id) {
+        List<EholeTransactionEntity> allByUserId = eholeTransactionRepository.findAllByUserId(id);
+        List<EholeTransactionDTO> eholeTransactionDTOS = new ArrayList<>();
+        allByUserId.stream().sorted(Comparator.comparing(o -> o.getEholeEntity().getId())).forEach(eholeTransactionEntity -> {
+            eholeTransactionDTOS.add(new EholeTransactionDTO(
+                    eholeTransactionEntity.getEholeEntity().getId(),
+                    eholeTransactionEntity.getAmount(),
+                    eholeTransactionEntity.getTransactionType()
+            ));
+        });
+        return eholeTransactionDTOS;
     }
 
 }

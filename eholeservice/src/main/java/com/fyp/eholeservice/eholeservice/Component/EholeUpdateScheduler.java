@@ -93,7 +93,7 @@ public class EholeUpdateScheduler {
                     jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.CANCELED);
                     System.out.println("E HOLE CANCELLED");
                 } else {
-                    jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.ACTIVE);
+                    jobDetail = buildJobDetail(eholeEntity.getId(), EholeStatusType.TRADING);
                 }
             }
             trigger = buildJobTrigger(jobDetail, Math.toIntExact(until));

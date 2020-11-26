@@ -12,4 +12,6 @@ public interface EholeTransactionRepository extends JpaRepository<EholeTransacti
 
     public List<EholeTransactionEntity> findEholeTransactionEntitiesByEholeEntity(EholeEntity eholeEntity);
 
+    public List<EholeTransactionEntity> findAllByUserId(Long id);
+
 }

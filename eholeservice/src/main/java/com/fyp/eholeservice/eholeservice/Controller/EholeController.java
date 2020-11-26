@@ -103,6 +103,7 @@ public class EholeController {
         HttpEntity httpEntity = new HttpEntity(headers);
         ResponseEntity<WalletDTO> exchange = null;
         if (!eholeService.isEholeExists(investEholeDTO.getEholeId())) {
+            System.out.println("NO KIND OF EHOLE!!");
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
@@ -122,6 +123,7 @@ public class EholeController {
         } else {
             if (exchange.getStatusCode().is2xxSuccessful()) {
                 if (Objects.requireNonNull(exchange.getBody()).getCurrentBalance() < investEholeDTO.getAmount()) {
+                    System.out.println("ALREADY FULLED");
                     return new ResponseEntity(HttpStatus.BAD_REQUEST);
                 } else {
                     EholeTransactionEntity isInvested = null;
@@ -141,10 +143,12 @@ public class EholeController {
                         return controllerHelper.saveInvestEholeOnPaymentService(request);
 //                        return new ResponseEntity(HttpStatus.OK);
                     } else {
+                        System.out.println("IS INVEST FALSE");
                         return new ResponseEntity(HttpStatus.BAD_REQUEST);
                     }
                 }
             } else {
+                System.out.println("EXCHANGE CODE FAILED");
                 return new ResponseEntity(exchange.getStatusCode());
             }
         }
@@ -162,8 +166,20 @@ public class EholeController {
     }
 
     @GetMapping(path = "/active/{status}")
-    public ResponseEntity getEholeByStatus(@PathVariable("status") EholeStatusType status) {
+    public ResponseEntity getEholeByStatus(@PathVariable("status") EholeStatusType status, OAuth2Authentication authentication) {
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+
         List<EhDTO> eholeByStatus = eholeService.getEholeByStatus(status);
+        if (status == EholeStatusType.TRADING) {
+            List<EhDTO> removingArr = new ArrayList<>();
+            eholeByStatus.forEach(ehDTO -> {
+                if ( !customPrincipal.getId().equals(ehDTO.getTraderId().toString())) {
+                    removingArr.add(ehDTO);
+                }
+            });
+            eholeByStatus.removeAll(removingArr);
+        }
+
         return new ResponseEntity(eholeByStatus, HttpStatus.OK);
     }
 
@@ -201,5 +217,13 @@ public class EholeController {
 
         ResponseEntity<String> exchange = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
         return new ResponseEntity("!@", exchange.getStatusCode());
+    }
+
+    @GetMapping(path = "/transactions")
+    public ResponseEntity getUserTransactions(OAuth2Authentication authentication) {
+        CustomPrincipal customPrincipal = controllerHelper.getCustomPrincipal(authentication);
+
+        List<EholeTransactionDTO> userTransactions = eholeService.getUserTransactions(Long.valueOf(customPrincipal.getId()));
+        return new ResponseEntity(userTransactions, HttpStatus.OK);
     }
 }
