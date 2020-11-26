@@ -15,6 +15,7 @@ public class OrderDTO {
     private float endPrice;
     private OrderStatus orderStatus;
     private OrderProfitStatus profitStatus;
+    private LeverageEnum leverageEnum;
     private double profit;
 
     public Long getId() {
@@ -103,5 +104,13 @@ public class OrderDTO {
 
     public void setProfit(double profit) {
         this.profit = profit;
+    }
+
+    public LeverageEnum getLeverageEnum() {
+        return leverageEnum;
+    }
+
+    public void setLeverageEnum(LeverageEnum leverageEnum) {
+        this.leverageEnum = leverageEnum;
     }
 }

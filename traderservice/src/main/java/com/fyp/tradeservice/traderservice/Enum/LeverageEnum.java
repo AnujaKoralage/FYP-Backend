@@ -2,16 +2,18 @@ package com.fyp.tradeservice.traderservice.Enum;
 
 public enum LeverageEnum {
 
-    LEV1("1:10", 0),
-    LEV2("1:20", 1),
-    LEV3("1:100", 2),
-    LEV4("1:200", 3),;
+    LEV1("1:10", 0, 1000),
+    LEV2("1:20", 1, 2000),
+    LEV3("1:100", 2, 10000),
+    LEV4("1:200", 3, 20000),;
     private String label;
     private int code;
+    private long multiplier;
 
-    LeverageEnum(String label, int code) {
+    LeverageEnum(String label, int code, long multiplier) {
         this.label = label;
         this.code = code;
+        this.multiplier = multiplier;
     }
 
     public String getLabel() {
@@ -30,4 +32,11 @@ public enum LeverageEnum {
         this.code = code;
     }
 
+    public long getMultiplier() {
+        return multiplier;
+    }
+
+    public void setMultiplier(long multiplier) {
+        this.multiplier = multiplier;
+    }
 }

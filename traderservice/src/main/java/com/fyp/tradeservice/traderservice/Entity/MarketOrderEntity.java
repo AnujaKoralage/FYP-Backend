@@ -18,6 +18,7 @@ public class MarketOrderEntity {
     private Long orderSize;
     private OrderAction orderAction;
     private OrderType orderType;
+    private LeverageEnum leverageEnum;
     private double startPrice;
     private double endPrice;
     private OrderStatus orderStatus;
@@ -124,5 +125,13 @@ public class MarketOrderEntity {
 
     public void setTraderId(Long traderId) {
         this.traderId = traderId;
+    }
+
+    public LeverageEnum getLeverageEnum() {
+        return leverageEnum;
+    }
+
+    public void setLeverageEnum(LeverageEnum leverageEnum) {
+        this.leverageEnum = leverageEnum;
     }
 }

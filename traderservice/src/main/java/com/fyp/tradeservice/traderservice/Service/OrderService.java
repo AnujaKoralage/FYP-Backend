@@ -47,6 +47,7 @@ public class OrderService {
         marketOrderEntity.setOrderType(placeorderRequest.getOrderType());
         marketOrderEntity.setStartPrice(placeorderRequest.getPrice());
         marketOrderEntity.setTraderId(traderId);
+        marketOrderEntity.setLeverageEnum(placeorderRequest.getLeverageEnum());
 
         OrderBookRequest orderBookRequest = new OrderBookRequest();
         orderBookRequest.setPrice(placeorderRequest.getPrice());
@@ -93,7 +94,8 @@ public class OrderService {
             double baceCurSellUnits = baceCurBuyUnits * orderById.getEndPrice();
 
             double profitQuantity = baceCurSellUnits - orderById.getOrderSize();
-            System.out.println(profitQuantity);
+            profitQuantity = profitQuantity * orderById.getLeverageEnum().getMultiplier();
+            System.out.println("PROF  " + profitQuantity);
             setProfitValues(marketOrderProfitEntity, profitQuantity);
         } else {
             double selBaceCurQty = orderById.getOrderSize() / orderById.getStartPrice();
@@ -101,7 +103,8 @@ public class OrderService {
             double sellQuoCurQty = orderById.getOrderSize() / orderById.getEndPrice();
             double profitInBaceCur = sellQuoCurQty - selBaceCurQty;
             double realProfit = profitInBaceCur / orderById.getEndPrice();
-            System.out.println(realProfit);
+            realProfit = realProfit * orderById.getLeverageEnum().getMultiplier();
+            System.out.println("PROF   " + realProfit);
             setProfitValues(marketOrderProfitEntity, realProfit);
         }
         MarketOrderEntity save = orderRepository.save(orderById);
